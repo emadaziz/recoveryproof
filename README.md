@@ -1,18 +1,20 @@
-# RecoveryProof MVP 0.1
+# RecoveryProof V0.2 fonctionnelle
 
-Socle SaaS de preuve de reprise: dashboard, API, connecteurs a jetons, plugins et mises a jour. Les sauvegardes restent chez le client.
+Cette version persiste réellement les organisations, utilisateurs, systèmes, agents, contrôles, tests de restauration et journaux d'audit dans PostgreSQL. Le tableau de bord est calculé par l'API: aucun KPI n'est écrit en dur dans JavaScript.
 
-## Demarrage
-1. Installer Docker Engine et Docker Compose v2.
-2. Lancer `make up`. Les secrets sont generes localement dans `secrets/`, ignores par Git et montes comme Docker secrets.
-3. Ouvrir http://localhost:8080
-4. API: http://localhost:8080/api/health
+## Démarrage
+```bash
+make up
+```
+Ouvrir `http://localhost:8080`, puis initialiser l'organisation et le compte administrateur. Mot de passe minimum: 12 caractères.
 
-## Regles de secrets
-- Aucun mot de passe, jeton ou cle API dans Git, une URL, le frontend ou une image.
-- Les jetons d'integration sont aleatoires (256 bits), affiches une seule fois et stockes uniquement sous empreinte HMAC.
-- Pour la production, remplacer les fichiers secrets par Docker Swarm secrets, HashiCorp Vault, Azure Key Vault ou Scaleway Secret Manager.
-- Ne jamais journaliser les en-tetes Authorization.
+## Parcours de test
+1. Ajouter un système dans **Systèmes** et retenir son ID.
+2. Créer un agent dans **Agents** et copier immédiatement son jeton.
+3. Construire l'image: `make agent-image`.
+4. Créer un dossier de test: `mkdir -p /tmp/backups && date > /tmp/backups/test.bak`.
+5. Exécuter l'agent avec la commande documentée dans `docs/AGENT.md`.
+6. Revenir au tableau de bord. Les KPI sont recalculés depuis PostgreSQL.
 
 ## Limites
-Ceci est un MVP executable, pas une certification RGPD/NIS2. Une mise en production exige DPIA/registre si applicable, contrats de sous-traitance, politique de retention, tests d'intrusion, supervision, sauvegardes restaurees et validation juridique.
+V0.2 n'est pas encore prête pour Internet: TLS externe, OIDC/MFA, migrations Alembic, sauvegarde automatique, tests d'intrusion et politique RGPD complète restent nécessaires avant production.
